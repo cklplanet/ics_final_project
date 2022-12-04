@@ -3,8 +3,11 @@ Created on Sun Apr  5 00:00:32 2015
 
 @author: zhengzhang
 """
+#added state: S_GAMING, from S_CHATTING and to S_CHATTING
+
 from chat_utils import *
 import json
+import os
 
 class ClientSM:
     def __init__(self, s):
@@ -73,6 +76,11 @@ class ClientSM:
                     logged_in = json.loads(myrecv(self.s))["results"]
                     self.out_msg += 'Here are all the users in the system:\n'
                     self.out_msg += logged_in
+
+                elif my_msg == 'game':
+                    mysend(self.s, json.dumps({"action":"game"}))
+                    self.out_msg += 'You may resume chatting.'
+                    os.system('python3 space_invaders/space_invaders.py')
 
                 elif my_msg[0] == 'c':
                     peer = my_msg[1:]
