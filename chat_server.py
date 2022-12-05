@@ -14,6 +14,7 @@ import json
 import pickle as pkl
 from chat_utils import *
 import chat_group as grp
+import os
 
 
 class Server:
@@ -28,6 +29,11 @@ class Server:
         self.server.bind(SERVER)
         self.server.listen(5)
         self.all_sockets.append(self.server)
+        # NEW function: game server?
+        self.game_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.game_server.bind(GAME_SERVER)
+        self.game_server.listen(5)
+        self.count = 0
         # initialize past chat indices
         self.indices = {}
         # sonnet
@@ -180,8 +186,14 @@ class Server:
 # ==============================================================================
 #                 new function: GAMING!!
 # ==============================================================================
-            #elif msg["action"] == "gaming":
-                #pass
+            elif msg["action"] == "game":
+                self.count += 1
+                from_name = self.logged_sock2name[from_sock]
+                the_guys = self.group.list_me(from_name)
+                for g in the_guys[1:]:
+                    to_sock = self.logged_name2sock[g]
+                    mysend(to_sock, json.dumps(
+                        {"action": "game"}))
 # ==============================================================================
 # the "from" guy has had enough (talking to "to")!
 # ==============================================================================
@@ -207,10 +219,21 @@ class Server:
 # ==============================================================================
     def run(self):
         print('starting server...')
-        while(1):
+        self.connection = []
+        self.game_init()
+        while True:
             read, write, error = select.select(self.all_sockets, [], [])
             print('checking logged clients..')
             for logc in list(self.logged_name2sock.values()):
+                if self.count >= 1:
+                    while len(self.connection)<2:
+                        conn, addr = self.game_server.accept()
+                        self.connection.append(conn)
+                while len(self.connection) == 2:
+                    try:
+                        self.game()
+                    except:
+                        break
                 if logc in read:
                     self.handle_msg(logc)
             print('checking new clients..')
