@@ -11,7 +11,8 @@ class Bullet(Sprite):
 
         self.rect = pygame.Rect(
             0, 0, self.settings.bullet_width, self.settings.bullet_height)
-        self.rect.midtop = ai_game.ship.rect.midtop
+        #currently player1 only!
+        self.rect.midtop = ai_game.ship1.rect.midtop
 
         self.y = float(self.rect.y)
 

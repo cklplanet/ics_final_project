@@ -80,7 +80,7 @@ class ClientSM:
                 elif my_msg == 'game':
                     mysend(self.s, json.dumps({"action":"game"}))
                     self.out_msg += 'You may resume chatting.'
-                    os.system('python3 space_invaders/space_invaders.py')
+                    os.system('python3 space_invaders.py')
 
                 elif my_msg[0] == 'c':
                     peer = my_msg[1:]

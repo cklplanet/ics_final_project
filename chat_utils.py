@@ -6,8 +6,11 @@ import time
 # CHAT_IP = socket.gethostbyname(socket.gethostname())
 CHAT_IP = ''  # socket.gethostbyname(socket.gethostname())
 
-CHAT_PORT = 1112
+CHAT_PORT = 8888
 SERVER = (CHAT_IP, CHAT_PORT)
+
+GAME_PORT = 9999
+GAME_SERVER = (CHAT_IP, GAME_PORT)
 
 menu = "\n++++ Choose one of the following commands\n \
         time: calendar time in the system\n \
@@ -21,6 +24,8 @@ S_OFFLINE = 0
 S_CONNECTED = 1
 S_LOGGEDIN = 2
 S_CHATTING = 3
+
+S_GAMING = 4
 
 SIZE_SPEC = 5
 
