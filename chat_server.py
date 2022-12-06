@@ -16,6 +16,15 @@ from chat_utils import *
 import chat_group as grp
 import os
 
+import pygame
+from space_invaders.settings import Settings
+from space_invaders.game_stats import GameStats
+from space_invaders.scoreboard import Scoreboard
+from space_invaders.button import Button
+from space_invaders.ship import Ship
+from space_invaders.bullet import Bullet
+from space_invaders.alien import Alien
+
 
 class Server:
     def __init__(self):
@@ -220,7 +229,7 @@ class Server:
     def run(self):
         print('starting server...')
         self.connection = []
-        self.game_init()
+        #self.game_init()
         while True:
             read, write, error = select.select(self.all_sockets, [], [])
             print('checking logged clients..')
@@ -246,11 +255,23 @@ class Server:
                 sock, address = self.server.accept()
                 self.new_client(sock)
 
+    def game_init(self):
+        pygame.init()
+        clock = pygame.time.Clock()
+
+        self.settings = Settings()
+
+        self.ship1 = Ship(self, "player1")
+        self.ship2 = Ship(self, "player2")
+        self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+
+        
 
 def main():
-    server = Server()
-    server.run()
+        server = Server()
+        server.run()
 
 
 if __name__ == "__main__":
-    main()
+        main()
