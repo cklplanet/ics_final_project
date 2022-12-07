@@ -178,7 +178,7 @@ class Server:
                 mysend(from_sock, json.dumps(
                     {"action": "search", "results": search_rslt}))
 # ==============================================================================
-#                 new function: GAMING!!
+#                 new function: scoreboard?
 # ==============================================================================
             #elif msg["action"] == "gaming":
                 #pass
