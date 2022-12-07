@@ -9,7 +9,7 @@ import pickle
 class Index:
     def __init__(self, name):
         self.name = name
-        self.msgs = [];
+        self.msgs = []
         self.index = {}
         self.total_msgs = 0
         self.total_words = 0

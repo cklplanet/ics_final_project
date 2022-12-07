@@ -165,6 +165,7 @@ class ClientSM:
 #==============================================================================
         elif self.state == S_GAMING:
             time.sleep(2)
+            print("client starting")
             self.game_client()
             #game = Game()
             #game.run_game()
@@ -191,26 +192,39 @@ class ClientSM:
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Space Invaders!!")
 
-        self.stats = GameStats(self)
-        self.sb = Scoreboard(self)
+        #self.stats = GameStats(self)
+        #self.sb = Scoreboard(self)
 
         self.ship1 = Ship(self, "player1")
         self.ship2 = Ship(self, "player2")
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
-        self._create_fleet()
+        #self._create_fleet()
 
         while True:
-            self._check_events()
-            if self.stats.game_active:
-                self.ship1.update()
-                self.ship2.update()
-                self._update_bullets()
+            command = self._check_events()
+            data = json.dumps(command).encode()
+            try:
+                self.s_game_in.send(bytes(data, encoding='utf-8'))
+            except:
+                self.state == S_GAMING
+                pygame.quit()
+                sys.exit()
+                break
+            feedback = self.s_game_in.recv(1024).decode('utf-8')
+            feedback = json.loads(feedback)
+            #feedback: [ship1pos, ship2pos]
+            self.ship1.rect.x = feedback[0]
+            self.ship2.rect.x = feedback[1]
+            #if self.stats.game_active:
+            #self._update_bullets()
                 #print(len(self.bullets))
-                self._update_aliens()
+            #self._update_aliens()
             self._update_screen()
 
+
+    # {right: 1, right_stop: 2, left: 3, left_stop: 4, fire:5}
     def _check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -218,19 +232,19 @@ class ClientSM:
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                self._check_keydown_events(event)
+                return self._check_keydown_events(event)
             elif event.type == pygame.KEYUP:
-                self._check_keyup_events(event)
+                return self._check_keyup_events(event)
 
     def _check_play_button(self, mouse_pos):
         if not self.stats.game_active:
             self.settings.initialize_dynamic_settings()
             pygame.mouse.set_visible(False)
-            self.stats.reset_stats()
-            self.stats.game_active = True
-            self.sb.prep_score()
-            self.sb.prep_level()
-            self.sb.prep_ships()
+            #self.stats.reset_stats()
+            #self.stats.game_active = True
+            #self.sb.prep_score()
+            #self.sb.prep_level()
+            #self.sb.prep_ships()
 
             self.aliens.empty()
             self.bullets.empty()
@@ -240,15 +254,11 @@ class ClientSM:
 
     def _check_keydown_events(self, event):
         if event.key == pygame.K_RIGHT:
-            self.ship1.moving_right = True
+            return 1
         elif event.key == pygame.K_LEFT:
-            self.ship1.moving_left = True
-        elif event.key == pygame.K_d:
-            self.ship2.moving_right = True
-        elif event.key == pygame.K_a:
-            self.ship2.moving_left = True
+            return 3
         elif event.key == pygame.K_SPACE:
-            self._fire_bullet()
+            return 5
         elif event.key == pygame.K_q:
             mysend(self.s, json.dumps({"action": "disconnect"}))
             pygame.quit()
@@ -256,13 +266,9 @@ class ClientSM:
 
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
-            self.ship1.moving_right = False
+            return 2
         if event.key == pygame.K_LEFT:
-            self.ship1.moving_left = False
-        if event.key == pygame.K_d:
-            self.ship2.moving_right = False
-        if event.key == pygame.K_a:
-            self.ship2.moving_left = False
+            return 4
 
 
     def _fire_bullet(self):
@@ -284,19 +290,19 @@ class ClientSM:
             self.bullets, self.aliens, True, True
         )
 
-        if collisions:
-            for aliens in collisions.values():
-                self.stats.score += self.settings.alien_points * len(aliens)
-            self.sb.prep_score()
-            self.sb.check_high_score()
+        #if collisions:
+            #for aliens in collisions.values():
+                #self.stats.score += self.settings.alien_points * len(aliens)
+            #self.sb.prep_score()
+            #self.sb.check_high_score()
 
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
 
-            self.stats.level += 1
-            self.sb.prep_level()
+            #self.stats.level += 1
+            #self.sb.prep_level()
 
     def _create_fleet(self):
         alien = Alien(self)
@@ -343,10 +349,10 @@ class ClientSM:
         self.screen.fill(self.settings.bg_color)
         self.ship1.blitme()
         self.ship2.blitme()
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()
-        self.aliens.draw(self.screen)
-        self.sb.show_score()
+        #for bullet in self.bullets.sprites():
+            #bullet.draw_bullet()
+        #self.aliens.draw(self.screen)
+        #self.sb.show_score()
 
         pygame.display.flip()
 

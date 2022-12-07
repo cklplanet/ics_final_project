@@ -24,6 +24,7 @@ from space_invaders.button import Button
 from space_invaders.ship import Ship
 from space_invaders.bullet import Bullet
 from space_invaders.alien import Alien
+from protocol import Protocol
 
 
 class Server:
@@ -229,7 +230,8 @@ class Server:
     def run(self):
         print('starting server...')
         self.connection = []
-        #self.game_init()
+        self.game_init()
+        print("game initialization complete.")
         while True:
             read, write, error = select.select(self.all_sockets, [], [])
             print('checking logged clients..')
@@ -238,6 +240,7 @@ class Server:
                     while len(self.connection)<2:
                         conn, addr = self.game_server.accept()
                         self.connection.append(conn)
+                        print(self.connection)
                 while len(self.connection) == 2:
                     try:
                         self.game()
@@ -260,11 +263,51 @@ class Server:
         clock = pygame.time.Clock()
 
         self.settings = Settings()
+        self.screen = pygame.display.set_mode(
+            (self.settings.screen_width, self.settings.screen_height))
 
         self.ship1 = Ship(self, "player1")
         self.ship2 = Ship(self, "player2")
-        self.bullets = pygame.sprite.Group()
-        self.aliens = pygame.sprite.Group()
+        #self.bullets = pygame.sprite.Group()
+        #self.aliens = pygame.sprite.Group()
+
+    def game(self):
+        command1 = self.connection[0].recv(1024).decode('utf-8')
+        command2 = self.connection[1].recv(1024).decode('utf-8')
+        command1 = json.loads(command1)
+        command2 = json.loads(command2)
+        self._check_command_1(command1)
+        self._check_command_2(command2)
+        self.ship1.update()
+        self.ship2.update()
+        feedback = []
+        feedback.append(self.ship1.rect.x)
+        feedback.append(self.ship2.rect.x)
+        feedback = json.dumps(feedback).encode()
+        self.connection[0].send(bytes(feedback, encoding='utf-8'))
+        self.connection[1].send(bytes(feedback, encoding='utf-8'))
+
+    # {right: 1, right_stop: 2, left: 3, left_stop: 4, fire:5}
+    def _check_command_1(self, command1):
+        if command1 == 1:
+            self.ship1.moving_right = True
+        elif command1 == 2:
+            self.ship1.moving_right = False
+        elif command1 == 3:
+            self.ship1.moving_left = True
+        elif command1 == 4:
+            self.ship1.moving_left = False
+
+    def _check_command_2(self, command2):
+        if command2 == 1:
+            self.ship2.moving_right = True
+        elif command2 == 2:
+            self.ship2.moving_right = False
+        elif command2 == 3:
+            self.ship2.moving_left = True
+        elif command2 == 4:
+            self.ship2.moving_left = False
+            
 
         
 
