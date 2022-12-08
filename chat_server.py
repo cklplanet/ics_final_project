@@ -181,10 +181,11 @@ class Server:
                 mysend(from_sock, json.dumps(
                     {"action": "search", "results": search_rslt}))
 # ==============================================================================
-#                 new function: scoreboard?
+#                 new function: scoreboard
 # ==============================================================================
             elif msg["action"] == "submit":
                 from_name = self.logged_sock2name[from_sock]
+                print("new game score submitted.")
                 with open('scoreboard.json', 'r+') as f:
                     scoreboard = json.load(f)
                     score = msg['score']
@@ -192,13 +193,28 @@ class Server:
                     if float(score) > float(score_old):
                         scoreboard[from_name] = float(score)
                     scoreboard_updated = {}
-                    sorter = sorted(scoreboard.items(), key=operator.itemgetter(1))
-                    sorter.reverse()
+                    sorter = sorted(scoreboard.items(), key=operator.itemgetter(1), reverse=True)
                     for x in sorter:
                         scoreboard_updated[x[0]] = x[1]
                     f.seek(0)
                     json.dump(scoreboard_updated, f)
                     f.truncate()
+# ==============================================================================
+#                 new function: ranking inquiry
+# ==============================================================================
+            elif msg["action"] == "ranking":
+                print("loading scoreboard:")
+                with open('scoreboard.json', 'r') as f:
+                    scoreboard = json.load(f)
+                    board = ""
+                    board += "---------------------------\n\
+                             Global Space Invader Scoreboard:\n"
+                    boardlist = [(x, scoreboard[x]) for x in scoreboard.keys()]
+                    board += '\n'.join([f"{i+1}. {boardlist[i][0]}\
+                             {boardlist[i][1]} points" for i in range(len(boardlist))])
+                    board += "\n---------------------------\n"
+                    mysend(from_sock, json.dumps(
+                    {"action": "ranking", "results": board}))
 # ==============================================================================
 # the "from" guy has had enough (talking to "to")!
 # ==============================================================================

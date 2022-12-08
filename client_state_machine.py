@@ -86,6 +86,11 @@ class ClientSM:
                     self.out_msg = self.out_msg + "Current round's high score: " + f"{score}"
                     self.out_msg += "\nHope you had some fun. You may resume chatting!"
 
+                elif my_msg == 'rank':
+                    mysend(self.s, json.dumps({"action": "ranking"}))
+                    rank_in = json.loads(myrecv(self.s))["results"]
+                    self.out_msg += rank_in
+
                 elif my_msg[0] == 'c':
                     peer = my_msg[1:]
                     peer = peer.strip()
