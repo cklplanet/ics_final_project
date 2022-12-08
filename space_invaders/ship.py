@@ -3,21 +3,16 @@ from pygame.sprite import Sprite
 
 class Ship(Sprite):
 
-    def __init__(self, ai_game, player):
+    def __init__(self, ai_game):
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
         
-        self.image = pygame.image.load(f'images/{player}.png')
+        self.image = pygame.image.load('images/player1.png')
         self.rect = self.image.get_rect()  
 
-        if player == 'player1':
-            self.shift = -100
-        else:
-            self.shift = 100
-
-        self.rect.midbottom = (self.screen_rect.midbottom[0] + self.shift, self.screen_rect.midbottom[1])
+        self.rect.midbottom = self.screen_rect.midbottom
 
         self.x = float(self.rect.x)
 
@@ -36,6 +31,6 @@ class Ship(Sprite):
         self.rect.x = self.x
 
     def center_ship(self):
-        self.rect.midbottom = (self.screen_rect.midbottom[0] + self.shift, self.screen_rect.midbottom[1])
+        self.rect.midbottom = self.screen_rect.midbottom
         self.x = float(self.rect.x)
     

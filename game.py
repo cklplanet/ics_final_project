@@ -24,8 +24,7 @@ class Game:
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
 
-        self.ship1 = Ship(self, "player1")
-        self.ship2 = Ship(self, "player2")
+        self.ship1 = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
@@ -38,7 +37,6 @@ class Game:
             self._check_events()
             if self.stats.game_active:
                 self.ship1.update()
-                self.ship2.update()
                 self._update_bullets()
                 #print(len(self.bullets))
                 self._update_aliens()
@@ -80,10 +78,6 @@ class Game:
             self.ship1.moving_right = True
         elif event.key == pygame.K_LEFT:
             self.ship1.moving_left = True
-        elif event.key == pygame.K_d:
-            self.ship2.moving_right = True
-        elif event.key == pygame.K_a:
-            self.ship2.moving_left = True
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_q:
@@ -96,10 +90,6 @@ class Game:
             self.ship1.moving_right = False
         if event.key == pygame.K_LEFT:
             self.ship1.moving_left = False
-        if event.key == pygame.K_d:
-            self.ship2.moving_right = False
-        if event.key == pygame.K_a:
-            self.ship2.moving_left = False
 
 
     def _fire_bullet(self):
@@ -161,7 +151,7 @@ class Game:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
-        if pygame.sprite.spritecollideany(self.ship1, self.aliens) or (pygame.sprite.spritecollideany(self.ship2, self.aliens)):
+        if pygame.sprite.spritecollideany(self.ship1, self.aliens):
             self._ship_hit()
         self._check_aliens_bottom()
 
@@ -179,7 +169,6 @@ class Game:
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship1.blitme()
-        self.ship2.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
@@ -197,17 +186,14 @@ class Game:
                 break
 
     def _ship_hit(self):
-        if (self.stats.ships_1_left > 0) and (self.stats.ships_2_left > 0):
+        if (self.stats.ships_left > 0):
             if pygame.sprite.spritecollideany(self.ship1, self.aliens):
-                self.stats.ships_1_left -= 1
-            if pygame.sprite.spritecollideany(self.ship2, self.aliens):
-                self.stats.ships_2_left -= 1
+                self.stats.ships_left -= 1
             self.sb.prep_ships()
             self.aliens.empty()
             self.bullets.empty()
             self._create_fleet()
             self.ship1.center_ship()
-            self.ship2.center_ship()
             sleep(0.5)
         else:
             self.stats.game_active = False
