@@ -8,6 +8,7 @@ Created on Sun Apr  5 00:00:32 2015
 from chat_utils import *
 import json
 import os
+from game import Game
 
 class ClientSM:
     def __init__(self, s):
@@ -78,9 +79,12 @@ class ClientSM:
                     self.out_msg += logged_in
 
                 elif my_msg == 'game':
-                    mysend(self.s, json.dumps({"action":"game"}))
-                    self.out_msg += 'You may resume chatting.'
                     os.system('python3 game.py')
+                    with open('score.txt', 'r') as f:
+                        score = f.readline().strip('\n')
+                    mysend(self.s, json.dumps({"action":"submit", 'score': f'{score}'}))
+                    self.out_msg = self.out_msg + "Current round's high score: " + f"{score}"
+                    self.out_msg += "\nHope you had some fun. You may resume chatting!"
 
                 elif my_msg[0] == 'c':
                     peer = my_msg[1:]

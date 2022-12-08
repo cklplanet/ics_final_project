@@ -47,6 +47,8 @@ class Game:
     def _check_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                with open('score.txt', 'w') as f:
+                    f.write(f'{round(self.stats.high_score, 3)}')
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -85,6 +87,8 @@ class Game:
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_q:
+            with open('score.txt', 'w') as f:
+                f.write(f'{round(self.stats.high_score, 3)}')
             sys.exit()
 
     def _check_keyup_events(self, event):
