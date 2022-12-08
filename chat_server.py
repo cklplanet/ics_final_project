@@ -14,6 +14,7 @@ import json
 import pickle as pkl
 from chat_utils import *
 import chat_group as grp
+import operator
 
 
 class Server:
@@ -184,6 +185,20 @@ class Server:
 # ==============================================================================
             elif msg["action"] == "submit":
                 from_name = self.logged_sock2name[from_sock]
+                with open('scoreboard.json', 'r+') as f:
+                    scoreboard = json.load(f)
+                    score = msg['score']
+                    score_old = scoreboard.get(from_name, 0)
+                    if float(score) > float(score_old):
+                        scoreboard[from_name] = float(score)
+                    scoreboard_updated = {}
+                    sorter = sorted(scoreboard.items(), key=operator.itemgetter(1))
+                    sorter.reverse()
+                    for x in sorter:
+                        scoreboard_updated[x[0]] = x[1]
+                    f.seek(0)
+                    json.dump(scoreboard_updated, f)
+                    f.truncate()
 # ==============================================================================
 # the "from" guy has had enough (talking to "to")!
 # ==============================================================================
