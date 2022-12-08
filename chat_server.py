@@ -35,6 +35,8 @@ class Server:
         # self.sonnet = pkl.load(self.sonnet_f)
         # self.sonnet_f.close()
         self.sonnet = indexer.PIndex("AllSonnets.txt")
+        #scoreboard for space invaders
+        self.scoreboard = {}
 
     def new_client(self, sock):
         # add to all sockets and to new clients
@@ -180,8 +182,8 @@ class Server:
 # ==============================================================================
 #                 new function: scoreboard?
 # ==============================================================================
-            #elif msg["action"] == "gaming":
-                #pass
+            elif msg["action"] == "submit":
+                from_name = self.logged_sock2name[from_sock]
 # ==============================================================================
 # the "from" guy has had enough (talking to "to")!
 # ==============================================================================
