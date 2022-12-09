@@ -18,6 +18,9 @@ menu = "\n++++ Choose one of the following commands\n \
         c _peer_: to connect to the _peer_ and chat\n \
         ? _term_: to search your chat logs where _term_ appears\n \
         p _#_: to get number <#> sonnet\n \
+        game: for a nice quick game of Space Invaders!!!\n\
+        rank: to search up global ranking among all the players thus far or\n\
+        r _peer_: to look up _peer's_ global ranking!\n\
         q: to leave the chat system\n\n"
 
 S_OFFLINE = 0

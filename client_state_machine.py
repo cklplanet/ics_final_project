@@ -83,7 +83,9 @@ class ClientSM:
                     with open('score.txt', 'r') as f:
                         score = f.readline().strip('\n')
                     mysend(self.s, json.dumps({"action":"submit", 'score': f'{score}'}))
+                    new_record = json.loads(myrecv(self.s))["results"]
                     self.out_msg = self.out_msg + "Current round's high score: " + f"{score}"
+                    self.out_msg += new_record
                     self.out_msg += "\nHope you had some fun. You may resume chatting!"
 
                 elif my_msg == 'rank':
@@ -100,6 +102,13 @@ class ClientSM:
                         self.out_msg += '-----------------------------------\n'
                     else:
                         self.out_msg += 'Connection unsuccessful\n'
+
+                elif my_msg[0] == 'r':
+                    peer = my_msg[1:]
+                    peer = peer.strip()
+                    mysend(self.s, json.dumps({"action":"inquiry", "target":peer}))
+                    inquiry_rslt = json.loads(myrecv(self.s))["results"]
+                    self.out_msg += inquiry_rslt
 
                 elif my_msg[0] == '?':
                     term = my_msg[1:].strip()

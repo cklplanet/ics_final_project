@@ -190,8 +190,10 @@ class Server:
                     scoreboard = json.load(f)
                     score = msg['score']
                     score_old = scoreboard.get(from_name, 0)
+                    new_record = "\n"
                     if float(score) > float(score_old):
                         scoreboard[from_name] = float(score)
+                        new_record = "\nNew record!"
                     scoreboard_updated = {}
                     sorter = sorted(scoreboard.items(), key=operator.itemgetter(1), reverse=True)
                     for x in sorter:
@@ -199,6 +201,8 @@ class Server:
                     f.seek(0)
                     json.dump(scoreboard_updated, f)
                     f.truncate()
+                    mysend(from_sock, json.dumps(
+                    {"action": "feedback", "results": new_record}))
 # ==============================================================================
 #                 new function: ranking inquiry
 # ==============================================================================
@@ -215,6 +219,21 @@ class Server:
                     board += "\n---------------------------\n"
                     mysend(from_sock, json.dumps(
                     {"action": "ranking", "results": board}))
+# ==============================================================================
+#                 new function: ranking inquiry (individual)
+# ==============================================================================
+            elif msg["action"] == "inquiry":
+                with open('scoreboard.json', 'r') as f:
+                    scoreboard = json.load(f)
+                    peer = msg["target"]
+                    try:
+                        peer_score = scoreboard[peer]
+                        result = f"{peer}'s score: {peer_score}"
+                    except:
+                        result = "Peer not found. Maybe ask them to try the game out?"
+                    mysend(from_sock, json.dumps(
+                        {"action": "inquiry", "results":result}
+                    ))
 # ==============================================================================
 # the "from" guy has had enough (talking to "to")!
 # ==============================================================================
