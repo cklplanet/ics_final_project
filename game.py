@@ -38,7 +38,6 @@ class Game:
             if self.stats.game_active:
                 self.ship1.update()
                 self._update_bullets()
-                #print(len(self.bullets))
                 self._update_aliens()
             self._update_screen()
 
