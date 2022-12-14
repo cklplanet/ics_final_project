@@ -349,7 +349,7 @@ class GUI:
 
         clicked = StringVar()
         clicked.set("Online users")
-        self.drop = OptionMenu(self.labelBottom, clicked, *options, command=selected)
+        self.drop = OptionMenu(self.labelBottom, clicked, *options, command=update_options)
         self.drop.place(relx=0.77,
                              rely=0.008,
                              relheight=0.025,
