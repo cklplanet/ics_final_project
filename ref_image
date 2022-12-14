@@ -1,0 +1,13 @@
+from tkinter import *
+# import PIL
+
+
+
+root = Tk()
+root.title("Xiaozao's Window")
+root.iconbitmap("icon.png")
+
+# my_img = ImageTK.PhotoImage(Image.open("icon.png"))
+
+
+root.mainloop()

@@ -1,0 +1,38 @@
+from tkinter import *
+
+
+root = Tk()
+root.title("Xiaozao's Window")
+root.geometry("400x400")
+
+def selected(event):
+    myLabel = Label(root, text=clicked.get()).pack()
+
+options = [
+            "Mon",
+            "Tue", 
+            "Wed"
+]
+
+
+def displayMenu():
+    clicked = StringVar()
+    clicked.set("Select a user")
+    drop = OptionMenu(root, clicked, *options, command=selected)
+    drop.place(relheight=0.15,
+                relx=0.2,
+                rely=0.07)
+
+
+activate = Button(root,
+                    text="Select a user",
+                    font="Helvetica 14 bold",
+                    command=displayMenu)
+activate.place(relheight=0.05,
+                relx=0.2,
+                rely=0.07)
+
+
+
+
+root.mainloop()

@@ -22,11 +22,15 @@ S_TALKING = 1
 #==============================================================================
 
 class Group:
-
+#@@@
     def __init__(self):
         self.members = {}
         self.chat_grps = {}
         self.grp_ever = 0
+        self.userlist = {'b':'b'}
+
+    def sign_up(self, name, pswd):
+        self.userlist[name] = pswd
 
     def join(self, name):
         self.members[name] = S_ALONE
@@ -34,6 +38,12 @@ class Group:
 
     def is_member(self, name):
         return name in self.members.keys()
+
+    def matched(self, name, pswd):
+        if self.userlist[name] == pswd:
+            return True
+        else:
+            return False
 
     def leave(self, name):
         self.disconnect(name)

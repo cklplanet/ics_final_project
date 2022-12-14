@@ -52,33 +52,61 @@ class Server:
             msg = json.loads(myrecv(sock))
             print("login:", msg)
             if len(msg) > 0:
-
-                if msg["action"] == "login":
+                print("------------")
+                if msg["action"] == "signup":
+                    # print("注册成功")
                     name = msg["name"]
+                    pswd = msg["pswd"]
+                    self.group.userlist[name] = pswd
+                    mysend(sock, json.dumps(
+                            {"action": "signup", "status": "success"}))
+                    print("注册成功")
 
-                    if self.group.is_member(name) != True:
-                        # move socket from new clients list to logged clients
-                        self.new_clients.remove(sock)
-                        # add into the name to sock mapping
-                        self.logged_name2sock[name] = sock
-                        self.logged_sock2name[sock] = name
-                        # load chat history of that user
-                        if name not in self.indices.keys():
-                            try:
-                                self.indices[name] = pkl.load(
-                                    open(name+'.idx', 'rb'))
-                            except IOError:  # chat index does not exist, then create one
-                                self.indices[name] = indexer.Index(name)
-                        print(name + ' logged in')
-                        self.group.join(name)
-                        mysend(sock, json.dumps(
-                            {"action": "login", "status": "ok"}))
-                    else:  # a client under this name has already logged in
+
+                elif msg["action"] == "login":
+                    name = msg["name"]
+                    pswd = msg["pswd"]
+                    print('---',self.group.userlist.items())
+                    if self.group.is_member(name) != True: #还没login的状态
+                        print("查看是否注册")
+                        if name in self.group.userlist.keys(): #user已注册
+                            print("查看密码是否正确")
+                            if self.group.matched(name, pswd) == True: #密码正确,proceed
+                                self.new_clients.remove(sock)
+                                self.logged_name2sock[name] = sock
+                                self.logged_sock2name[sock] = name
+                                if name not in self.indices.keys(): 
+                                # load chat history of that user
+                                    print("load chat history")
+                                    try:
+                                        self.indices[name] = pkl.load(
+                                            open(name+'.idx', 'rb'))
+                                    except IOError:  # chat index does not exist, then create one
+                                        self.indices[name] = indexer.Index(name)
+                                print(name + ' logged in')
+                                self.group.join(name)
+                                mysend(sock, json.dumps(
+                                    {"action": "login", "status": "ok"}))
+                                print("登录成功")
+                            elif self.group.matched(name, pswd) != True: #密码错误，报错
+                                mysend(sock, json.dumps(
+                                    {"action": "login", "status": "wrongpswd"}))
+                                print("密码错误，报错")
+                            else:
+                                print("else")
+                        elif name not in self.group.userlist.keys(): #user未注册
+                            print("未注册")
+                            mysend(sock, json.dumps(
+                                    {"action": "login", "status": "needsignup"}))
+                        else:            
+                            print("else else")
+                    else:  # a client under this name has already [logged in]
                         mysend(sock, json.dumps(
                             {"action": "login", "status": "duplicate"}))
                         print(name + ' duplicate login attempt')
                 else:
                     print('wrong code received')
+                print("Should be print out")
             else:  # client died unexpectedly
                 self.logout(sock)
         except:
@@ -88,7 +116,7 @@ class Server:
         # remove sock from all lists
         name = self.logged_sock2name[sock]
         pkl.dump(self.indices[name], open(name + '.idx', 'wb'))
-        del self.indices[name]
+        del self.indices[name] # log out!
         del self.logged_name2sock[name]
         del self.logged_sock2name[sock]
         self.all_sockets.remove(sock)
@@ -146,8 +174,16 @@ class Server:
             elif msg["action"] == "list":
                 from_name = self.logged_sock2name[from_sock]
                 msg = self.group.list_all()
+                print('msg',msg)
                 mysend(from_sock, json.dumps(
-                    {"action": "list", "results": msg}))
+                    {"action": "list", "results": '1'}))
+
+            elif msg["action"] == "options":
+                from_name = self.logged_sock2name[from_sock]
+                ppl_list = self.indices.keys() #在线人员
+                print(ppl_list)
+                mysend(from_sock, json.dumps(
+                    {"action": "options", "results": ppl_list}))
 # ==============================================================================
 #             retrieve a sonnet
 # ==============================================================================

@@ -80,7 +80,7 @@ def myrecv(s):
             print('disconnected')
             break
         msg += text
-    #print ('received '+message)
+    # print ('received '+ message)
     return (msg)
 
 

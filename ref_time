@@ -1,0 +1,43 @@
+from datetime import datetime
+from tkinter import *
+
+
+class Timer:
+    def __init__(self):
+        pass
+        self.Window = Tk()
+        raw = datetime.now()
+        date_now = raw.strftime('%d %b %Y')
+        time_now = raw.strftime('%H:%M:%S')
+        date = Label(self.Window,
+                    text=date_now,
+                    justify=CENTER,
+                    font="Helvetica 14 bold")
+        date.place(relx=0.2,rely=0.07)
+        # self.Window.mainloop()
+
+    def update_clock(self):
+        raw = datetime.now()
+        time_now = raw.strftime('%H:%M:%S')
+        time = Label(self.Window,
+                    text="time_now",
+                    justify=CENTER,
+                    font="Helvetica 14 bold")
+        time.place(relx=0.2,rely=0.5)
+        # time.after(1000, self.update_clock)
+        self.Window.mainloop()
+
+    def run(self):
+        # self.Window.mainloop()
+        self.update_clock()
+        
+
+t = Timer()
+t.run()
+
+
+
+
+
+
+

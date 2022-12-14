@@ -77,6 +77,12 @@ class ClientSM:
                     logged_in = json.loads(myrecv(self.s))["results"]
                     self.out_msg += 'Here are all the users in the system:\n'
                     self.out_msg += logged_in
+                
+                # elif my_msg == 'options':
+                #     mysend(self.s, json.dumps({"action":"options"}))
+                #     options = json.loads(myrecv(self.s))["results"]
+                #     self.out_msg += 'Here are all the users in the system:\n'
+                #     self.out_msg += logged_in
 
                 elif my_msg == 'game':
                     os.system('python3 game.py')

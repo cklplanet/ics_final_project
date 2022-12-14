@@ -31,6 +31,6 @@ class Client:
 
     def run_chat(self):
         self.init_chat()
-        self.gui.run()
+        self.gui.run()  # run GUI
         print("gui is off")
         self.quit()

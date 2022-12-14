@@ -1,0 +1,26 @@
+from tkinter import *
+
+
+
+
+root = Tk()
+root.title("Xiaozao's Window")
+root.geometry("400x400")
+
+def selected(event):
+    myLabel = Label(root, text=clicked.get()).pack()
+
+options = [
+            "Mon",
+            "Tue", 
+            "Wed"
+]
+
+
+clicked = StringVar()
+clicked.set("Select a user to chat with")
+drop = OptionMenu(root, clicked, *options, command=selected)
+drop.pack()
+
+
+root.mainloop()
